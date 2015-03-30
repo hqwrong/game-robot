@@ -1,0 +1,13 @@
+.header {
+	type 0 : integer
+	session 1 : integer
+}
+
+echo 1 {
+     request {
+             msg 0 : string
+     }
+     response {
+             msg 0 : string
+     }
+}

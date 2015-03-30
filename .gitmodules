@@ -1,0 +1,3 @@
+[submodule "proto/sproto"]
+	path = proto/sproto
+	url = git@github.com:hqwrong/py-sproto.git
