@@ -14,7 +14,7 @@ A simple robot client for game server.
 
 Run
 
-    python -m test.server
+    python -m test/server  sproto
     
 to launch test server
 
