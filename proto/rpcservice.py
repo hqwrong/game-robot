@@ -86,6 +86,8 @@ class RpcService(object):
     def _write(self):
         while True:
             data = self.write_queue.get()
+            if self.c2s_encrypt:
+                data = self.c2s_encrypt(data)
             try:
                 self.sock.sendall(data)
             except socket.error, e:
@@ -100,6 +102,9 @@ class RpcService(object):
                 if not buf:
                     logging.info("client disconnected, %s:%s" % self.addr)
                     break
+                if self.s2c_encrypt:
+                    buf = self.s2c_encrypt(buf)
+
             except socket.error, e:
                 logging.info("read socket failed:%s" % str(e))
                 break
@@ -120,8 +125,6 @@ class RpcService(object):
     def _dispatch(self):
         while True:
             data = self.read_queue.get()
-            if self.s2c_encrypt:
-                data = self.s2c_encrypt(data)
             p = proto.dispatch(data)
             session   = p["session"]
             msg    =    p["msg"]
@@ -151,8 +154,6 @@ class RpcService(object):
         return cls.SESSION_ID
 
     def _send(self, data):
-        if self.c2s_encrypt:
-            data = self.c2s_encrypt(data)
         self.write_queue.put(struct.pack("!H", len(data)) + data)
 
     def invoke(self, protoname, msg):

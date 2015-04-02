@@ -20,6 +20,8 @@ class Server(object):
         sock.listen(3)
         self.sock = sock
         self.conn = None
+
+    def _init_encrypt(self):
         entype = getattr(config, "encrypt", None)
         if entype == "rc4":
             self.c2s_encrypt = RC4(config.c2s_key).crypt
@@ -30,24 +32,29 @@ class Server(object):
         else:
             raise ValueError("not support %s encrypt"%entype)
 
-
     def _send(self, data):
+        data = struct.pack("!H", len(data)) + data
         if self.s2c_encrypt:
             data = self.s2c_encrypt(data)
-        self.conn.sendall(struct.pack("!H", len(data)) + data)
+        self.conn.sendall(data)
+
+    def _recv(self, sz):
+        data = self.conn.recv(sz, socket.MSG_WAITALL)
+        if self.c2s_encrypt:
+            data = self.c2s_encrypt(data)
+        return data
 
     def run(self):
         while True:
             self.conn, addr = self.sock.accept()
+            self._init_encrypt()
             while True:
-                header = self.conn.recv(2, socket.MSG_WAITALL)
+                header = self._recv(2)
                 if not header:
                     print "disconnected", addr
                     break
                 sz, = struct.unpack("!H", header)
-                content = self.conn.recv(sz, socket.MSG_WAITALL)
-                if self.c2s_encrypt:
-                    content = self.c2s_encrypt(content)
+                content = self._recv(sz)
                 self.on_recv(content)
 
     def on_recv(self, content):
