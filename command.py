@@ -40,6 +40,7 @@ def get_handle(protoname):
 
 
 ######################## decorators =============================
+
 def addcmd(args = [], name = ""):
     def _decorator(f):
         realname = name or f.__name__

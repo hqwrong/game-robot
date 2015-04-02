@@ -34,11 +34,6 @@ class Game(object):
         return self.srv.invoke(protoname, msg)
 
     ################################ Test #########################################
-    @addhandle("test")
-    def test(self, args):
-        print("receive test notify", args)
-
-
     @addcmd(["int", "string"])
     def login(self, uid, token):
         self.uid = uid
@@ -85,8 +80,9 @@ class Game(object):
     def addone(self, i):
         self.send("addone", {"i": i})
 
+    @addcmd(["int"])
     @addhandle("notify_addone")
-    def notify_addone(self, msg):
-        print "addone result:", msg["i"]
+    def notify_addone(self, i):
+        print "addone result:", i
         
     ################################ Test End #########################################

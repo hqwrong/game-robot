@@ -26,10 +26,14 @@ class Server(object):
     def run(self):
         while True:
             self.conn, addr = self.sock.accept()
-            header = self.conn.recv(2, socket.MSG_WAITALL)
-            sz, = struct.unpack("!H", header)
-            content = self.conn.recv(sz, socket.MSG_WAITALL)
-            self.on_recv(content)
+            while True:
+                header = self.conn.recv(2, socket.MSG_WAITALL)
+                if not header:
+                    print "disconnected", addr
+                    break
+                sz, = struct.unpack("!H", header)
+                content = self.conn.recv(sz, socket.MSG_WAITALL)
+                self.on_recv(content)
 
     def on_recv(self, content):
         pass

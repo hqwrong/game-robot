@@ -16,6 +16,9 @@ class Client(object):
                 sys.stdout.flush()
 
                 l = sys.stdin.readline().strip()
+                if l == "exit":
+                    print("exit!")
+                    exit(1)
                 tokens = l.split(None, 1)
                 if not tokens:
                     continue
@@ -29,8 +32,8 @@ class Client(object):
 
             except KeyboardInterrupt:
                 print "keyboard Interrupted."
-                break
+                return
 
-            except:
-                raise
-                
+            except Exception as e:
+                print "error occured", e
+                continue
