@@ -14,11 +14,14 @@ class Client(object):
             try:
                 sys.stdout.write(ROBOT_CLIENT_PROMPT)
                 sys.stdout.flush()
-
-                l = sys.stdin.readline().strip()
-                if l == "exit":
-                    print("exit!")
-                    exit(1)
+                l = sys.stdin.read(1)
+                if not l: # eof
+                    print "exit on EOF"
+                    exit(0)
+                if l == '\n':
+                    continue
+                l += sys.stdin.readline()
+                l.strip()
                 tokens = l.split(None, 1)
                 if not tokens:
                     continue
@@ -29,10 +32,6 @@ class Client(object):
                 result = do_cmdstr(self.game, cmdname, tokens[1] if len(tokens) > 1 else "")
                 if result != None:
                     print(result)
-
-            except KeyboardInterrupt:
-                print "keyboard Interrupted."
-                return
 
             except Exception as e:
                 print "error occured", e
