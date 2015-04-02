@@ -34,6 +34,12 @@ def do_cmdstr(player, cmdname, argstr):
     args = _parseargs(cmd["args"], argstr)
     return do_cmd(player, cmdname, args)
 
+def get_handle(protoname):
+    return handles.get(protoname, None)
+
+
+
+######################## decorators =============================
 def addcmd(args = [], name = ""):
     def _decorator(f):
         realname = name or f.__name__

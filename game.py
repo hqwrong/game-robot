@@ -17,7 +17,7 @@ def _get_secret(uid, token, salt):
 
 class Game(object):
     def __init__(self, addr):
-        self.srv = RpcService(addr)
+        self.srv = RpcService(addr, self)
         self.is_login = False
         self.uid = None
         self.token = None
@@ -80,5 +80,13 @@ class Game(object):
         resp = self.call("echo", {"msg" : msg})
         print("response:", resp)
         return resp
+
+    @addcmd(["int"])
+    def addone(self, i):
+        self.send("addone", {"i": i})
+
+    @addhandle("notify_addone")
+    def notify_addone(self, msg):
+        print "addone result:", msg["i"]
         
     ################################ Test End #########################################

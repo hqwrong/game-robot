@@ -7,9 +7,14 @@ class Handler(object):
     def echo(server, msg):
         return msg
 
+    @staticmethod
+    def addone(server, msg):
+        server.send("notify_addone", {"i":msg["i"]+1})
+
 class Server(object):
     def __init__(self, addr):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sock.bind(addr)
         sock.listen(3)
         self.sock = sock
@@ -21,7 +26,6 @@ class Server(object):
     def run(self):
         while True:
             self.conn, addr = self.sock.accept()
-            print "accept connection:", addr
             header = self.conn.recv(2, socket.MSG_WAITALL)
             sz, = struct.unpack("!H", header)
             content = self.conn.recv(sz, socket.MSG_WAITALL)
@@ -42,7 +46,7 @@ class SprotoServer(Server):
 
     def on_recv(self, content):
         p = self.proto.dispatch(content)
-        session   = p["session"]
+        session   = p.get("session", 0)
         msg    =    p["msg"]
         protoname = p["proto"]
         assert p["type"] == "REQUEST"
@@ -52,6 +56,10 @@ class SprotoServer(Server):
             print "response", resp
             pack = self.proto.response(protoname, resp, session)
             self._send(pack)
+
+    def send(self, protoname, msg):
+        pack = self.proto.request(protoname, msg)
+        self._send(pack)
 
 def main():
     port = config.port

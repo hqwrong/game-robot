@@ -10,13 +10,15 @@ import socket
 
 from google.protobuf import text_format
 
+import command
 
 class RpcService(object):
     SESSION_ID = 1
-    def __init__(self, addr):
+    def __init__(self, addr, game):
         self.hub  = gevent.get_hub()
         self.addr = addr
         self.sock = None
+        self.game = game
 
         self.time_diff   = 0
 
@@ -28,7 +30,6 @@ class RpcService(object):
         self.dispatch_tr = None
 
         self._sessions = {}
-        self.handlers = {}
 
     def _start(self):
         if self.sock:
@@ -112,8 +113,11 @@ class RpcService(object):
 
             if p["type"] == "REQUEST":
                 protoname = p["proto"]
-                cb = self.handlers[protoname]
-                resp = cb(msg)
+                cb = command.get_handle(protoname)
+                if not cb:
+                    print "no handler for proto:", protoname
+                    continue
+                resp = cb(self.game, msg)
                 if session:
                     # rpc call
                     pack = proto.response(protoname, resp, session)
@@ -145,7 +149,4 @@ class RpcService(object):
         self._sessions[session] = ev
         self._send(pack)
         return ev.get()
-
-    def register(self, protoname, func):
-        self.handlers[protoname] = func
 

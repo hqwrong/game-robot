@@ -2,11 +2,12 @@ import sys
 from game import Game
 from command import do_cmdstr,has_cmd
 
+
 ROBOT_CLIENT_PROMPT = "> "
 
 class Client(object):
-    def __init__(self):
-        self.game = Game(("127.0.0.1", 8251))
+    def __init__(self, srv_addr):
+        self.game = Game(srv_addr)
 
     def interact(self):
         while True:

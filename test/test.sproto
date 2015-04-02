@@ -11,3 +11,15 @@ echo 1 {
              msg 0 : string
      }
 }
+
+addone 2 {
+    request {
+            i 0 : integer
+    }
+}
+
+notify_addone 3 {
+    request {
+        i 0 :integer
+    }
+}
