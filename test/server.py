@@ -1,6 +1,7 @@
 import socket, struct, sys
 from proto.sproto.sproto import SprotoRpc
 import test.config as config
+from test.rc4 import RC4
 
 class Handler(object):
     @staticmethod
@@ -19,8 +20,20 @@ class Server(object):
         sock.listen(3)
         self.sock = sock
         self.conn = None
+        entype = getattr(config, "encrypt", None)
+        if entype == "rc4":
+            self.c2s_encrypt = RC4(config.c2s_key).crypt
+            self.s2c_encrypt = RC4(config.s2c_key).crypt
+        elif entype == None:
+            self.c2s_encrypt = None
+            self.s2c_encrypt = None
+        else:
+            raise ValueError("not support %s encrypt"%entype)
+
 
     def _send(self, data):
+        if self.s2c_encrypt:
+            data = self.s2c_encrypt(data)
         self.conn.sendall(struct.pack("!H", len(data)) + data)
 
     def run(self):
@@ -33,6 +46,8 @@ class Server(object):
                     break
                 sz, = struct.unpack("!H", header)
                 content = self.conn.recv(sz, socket.MSG_WAITALL)
+                if self.c2s_encrypt:
+                    content = self.c2s_encrypt(content)
                 self.on_recv(content)
 
     def on_recv(self, content):

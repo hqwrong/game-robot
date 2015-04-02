@@ -11,6 +11,8 @@ import socket
 from google.protobuf import text_format
 
 import command
+from .rc4 import RC4
+from cfg import *
 
 class RpcService(object):
     SESSION_ID = 1
@@ -28,6 +30,17 @@ class RpcService(object):
         self.read_queue  = Queue()
         self.read_tr     = None
         self.dispatch_tr = None
+
+
+        entype = Config.get("encrypt", None)
+        if entype == "rc4":
+            self.c2s_encrypt = RC4(Config["c2s_key"]).crypt
+            self.s2c_encrypt = RC4(Config["s2c_key"]).crypt
+        elif entype == None:
+            self.c2s_encrypt = None
+            self.s2c_encrypt = None
+        else:
+            raise ValueError("not support %s encrypt"%entype)
 
         self._sessions = {}
 
@@ -107,6 +120,8 @@ class RpcService(object):
     def _dispatch(self):
         while True:
             data = self.read_queue.get()
+            if self.s2c_encrypt:
+                data = self.s2c_encrypt(data)
             p = proto.dispatch(data)
             session   = p["session"]
             msg    =    p["msg"]
@@ -136,6 +151,8 @@ class RpcService(object):
         return cls.SESSION_ID
 
     def _send(self, data):
+        if self.c2s_encrypt:
+            data = self.c2s_encrypt(data)
         self.write_queue.put(struct.pack("!H", len(data)) + data)
 
     def invoke(self, protoname, msg):

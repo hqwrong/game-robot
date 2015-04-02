@@ -1,7 +1,11 @@
-#### game server address
+############# game server address
 server = "127.0.0.1"
 port   = 8251
 
+############# encrypt
+encrypt = "rc4"
+c2s_key = "C2S_RC4"
+s2c_key = "S2C_RC4"
 
 ############# config proto
 
