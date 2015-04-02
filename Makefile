@@ -1,4 +1,4 @@
 all:
-	cd proto/pysproto/ && make
+	cd proto/sproto/ && make
 clean:
 	find . -type d -exec rm -f *.pyc \;

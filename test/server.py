@@ -56,9 +56,9 @@ class SprotoServer(Server):
 def main():
     port = config.port
     if len(sys.argv) < 2:
-        print "Usage %s [sp/pb]"%sys.argv[0]
+        print "Usage %s [sproto/protobuf]"%sys.argv[0]
         exit()
-    if sys.argv[1] == "sp":
+    if sys.argv[1] == "sproto":
         server = SprotoServer(("0.0.0.0", port))
         print "...", server
     else:
