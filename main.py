@@ -11,7 +11,8 @@ from cmdclient import Client
 from simulator import Simulator
 
 def main():
-    srv_addr = (Config["host"], Config["port"])
+    srv_addr = (Config["server"], Config["port"])
+    print "connect to", srv_addr
     if Config["mode"] == "simulator":
         sim = Simulator(srv_addr)
         sim.run(Config["run"])

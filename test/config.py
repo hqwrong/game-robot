@@ -22,7 +22,7 @@ proto_header = "header"
 # mode = "simulator"                 # client / simulator
 # run = [
 #     {
-#         "cmd" : "echo",
+#         "cmd" : "addone",
 #         "args" : ["hello world!"],
 #         "count" : 1,            # how many clients to launch to run this command
 #     },
