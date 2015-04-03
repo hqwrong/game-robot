@@ -42,5 +42,6 @@ To launch test server:
 To launch client:
 
     python main.py test/config.py
-    
+
+Now you've got a client to interactive, try to type `addone 1` or `echo hello` to play around.
 
