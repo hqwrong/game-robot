@@ -1,4 +1,4 @@
-import sys
+import sys,traceback
 from game import Game
 from command import do_cmdstr,has_cmd
 
@@ -34,5 +34,5 @@ class Client(object):
                     print(result)
 
             except Exception as e:
-                print "error occured", e
+                print "error occured", e, traceback.format_exc()
                 continue

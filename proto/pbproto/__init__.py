@@ -2,6 +2,13 @@ import os, sys, time
 from . import proto_dict
 import client_rpc
 
+def _msg2dict(msg):
+    ret = {}
+    fields = msg.ListFields()
+    for f,v in fields:
+        ret[f.name] = v
+    return ret
+
 class Message(object):
     def __init__(self, pack, id):
         self.__dict__['_Rpc_Pack'] = pack 
@@ -142,12 +149,13 @@ class PbRpc(object):
             # request
             type_id = p.type
             type_name = self.type_name(type_id)
-            message = proto.lookup(type_name)
+            message = self.lookup(type_name)
             message.decode(p.data)
+            _msg_wrap(message)
             return {
                 "type":"REQUEST", 
                 "proto":type_name, 
-                "msg": result, 
+                "msg": _msg2dict(message),
                 "session": p.session if p.session != 0 else None,
             }
         else:
@@ -157,7 +165,7 @@ class PbRpc(object):
             message = self.lookup(type_name, False)
             message.decode(p.data)
             del self._sessions[session]
-            return {"type":"RESPONSE", "session":session, "msg":message}
+            return {"type":"RESPONSE", "session":session, "msg":_msg2dict(message)}
         
     def request(self, protoname, msg, session):
         if session:

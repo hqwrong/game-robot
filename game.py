@@ -37,19 +37,19 @@ class Game(object):
     @addcmd(["int", "string"])
     def login(self, uid, token):
         self.uid = uid
-        self.token = token or "for_cmd_client"
+        self.token = token or "Game is loading!"
         resp = self.call("client.check_version", {"client_version" : "I'm a robot!"})
-        if resp.code != 0:
-            return "uid: %d check version failed, errcode:%d" % (self.uid, resp.errcode)
+        if "errcode" in resp:
+            return "uid: %d check version failed, errcode:%d" % (self.uid, resp["errcode"])
 
-        self.salt = resp.salt
+        self.salt = resp["salt"]
         pack = {
             "uid": self.uid,
             "token": _get_secret(self.uid, self.token, self.salt),
         }
         resp = self.call("client.login", pack)
-        if resp.errcode != 0:
-            return "uid: %d login failed, errcode:%d" % (self.uid, resp.errcode)
+        if "errcode" in resp:
+            return "uid: %d login failed, errcode:%d" % (self.uid, resp["errcode"])
 
         # self.srv.set_timestamp(resp.timestamp)
         self.is_login = True
@@ -60,7 +60,7 @@ class Game(object):
     @addcmd(name = "create")
     def create_user(self):
         resp = self.call("client.create", {"platform" : 1})
-        print resp.uid, resp.token
+        print resp["uid"], resp["token"]
 
     @addcmd()
     def login2(self):
