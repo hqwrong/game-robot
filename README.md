@@ -4,10 +4,13 @@ A simple robot client for game server.
 
 ## Features
 
-1. Multiple protos support. `sproto` and `protobuf` so far.
+1. Provide high level synchronous api based on [gevent](http://gevent.org/)
 
-2. Two modes support. `client` mode for interaction on command line, `simulator` mode for async running which 
+2. Multiple protos support. `sproto` and `protobuf` so far.
+
+3. Two modes support. `client` mode for interaction on command line, `simulator` mode for async running which 
    is often used in pressure test.
+
 
 ## Setup && Launch
 
