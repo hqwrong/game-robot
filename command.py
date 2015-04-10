@@ -6,7 +6,7 @@ commands = {}
 handles = {}
 
 def _splitargstr(argstr):
-    argstr = argstr.strip()
+    argstr = argstr.strip() + " "
     in_string = None
     j = 0
     delimiter = []
@@ -31,8 +31,6 @@ def _splitargstr(argstr):
 
     if delimiter or in_string:
         raise NameError("syntax error at end of [%s]" % argstr)
-
-    args.append(argstr[j:i+1])
 
     return args
 
