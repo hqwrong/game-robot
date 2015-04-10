@@ -6,15 +6,17 @@ commands = {}
 handles = {}
 
 def _splitargstr(argstr):
-    argstr = argstr.strip() + " "
+    argstr += " "
     in_string = None
     j = 0
     delimiter = []
     args = []
     for i in xrange(0, len(argstr)):
         if not delimiter and not in_string and argstr[i] in "\t\n ":
-            args.append(argstr[j:i+1])
-            j = i
+            tok = argstr[j:i+1].strip()
+            if tok:
+                args.append(tok)
+                j = i
         elif in_string:
             if argstr[i] == in_string:
                 in_string = None
