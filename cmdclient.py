@@ -2,8 +2,7 @@ import sys,traceback
 from game import Game
 from command import do_cmdstr,has_cmd
 
-
-ROBOT_CLIENT_PROMPT = "> "
+import cfg
 
 class Client(object):
     def __init__(self, srv_addr):
@@ -12,7 +11,7 @@ class Client(object):
     def interact(self):
         while True:
             try:
-                sys.stdout.write(ROBOT_CLIENT_PROMPT)
+                sys.stdout.write(cfg.CLIENT_PROMPT)
                 sys.stdout.flush()
                 l = sys.stdin.read(1)
                 if not l: # eof

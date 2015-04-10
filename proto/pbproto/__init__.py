@@ -151,7 +151,7 @@ class PbRpc(object):
             type_name = self.type_name(type_id)
             message = self.lookup(type_name)
             message.decode(p.data)
-            _msg_wrap(message)
+            _msg2dict(message)
             return {
                 "type":"REQUEST", 
                 "proto":type_name, 
@@ -167,7 +167,7 @@ class PbRpc(object):
             del self._sessions[session]
             return {"type":"RESPONSE", "session":session, "msg":_msg2dict(message)}
         
-    def request(self, protoname, msg, session):
+    def request(self, protoname, msg, session = 0):
         if session:
             self._sessions[session] = protoname
         pack = self.lookup(protoname)

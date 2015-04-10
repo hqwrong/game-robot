@@ -7,6 +7,7 @@ import md5, sys, traceback
 import gevent
 
 from command import *
+import cfg
 
 def _get_secret(uid, token, salt):
     m = md5.new()
@@ -27,58 +28,39 @@ class Game(object):
     def _dft_handle(self, *args):
         print args
         
-    def call(self, protoname, msg):
+    def call(self, protoname, msg = {}):
         return self.srv.call(protoname, msg)
 
-    def send(self, protoname, msg):
+    def send(self, protoname, msg = {}):
         return self.srv.invoke(protoname, msg)
 
     ################################ Test #########################################
-    @addcmd()
-    def login(self, uid, token):
-        self.uid = uid
-        self.token = token or "Game is loading!"
-        resp = self.call("client.check_version", {"client_version" : "I'm a robot!"})
-        if "errcode" in resp:
-            return "uid: %d check version failed, errcode:%d" % (self.uid, resp["errcode"])
-
-        self.salt = resp["salt"]
-        pack = {
-            "uid": self.uid,
-            "token": _get_secret(self.uid, self.token, self.salt),
-        }
-        resp = self.call("client.login", pack)
-        if "errcode" in resp:
-            return "uid: %d login failed, errcode:%d" % (self.uid, resp["errcode"])
-
-        # self.srv.set_timestamp(resp.timestamp)
-        self.is_login = True
-        print("uid: %d login succeed" % self.uid)
-
-        return None
-
     @addcmd("create")
     def create_user(self):
         resp = self.call("client.create", {"platform" : 1})
         print resp["uid"], resp["token"]
 
     @addcmd()
-    def login2(self):
+    def login(self, user):
         '''for sproto test login '''
-        resp = self.call("login", {"account": "test_account"})
-        print("response:", resp)
-        return resp
+        resp = self.call("login", {"account": user})
+        cfg.CLIENT_PROMPT = "[%s] > " % user
+        print(resp["prompt"])
 
     @addcmd()
     def echo(self, msg):
         '''for sproto echo test '''
         resp = self.call("echo", {"msg" : msg})
-        print("response:", resp)
         return resp
 
     @addcmd()
     def addone(self, i):
         self.send("addone", {"i": i})
+
+    @addcmd()
+    def addlist(self, l):
+        resp = self.call("addlist", {"l": l})
+        print "answer:", resp["answer"]
 
     @addcmd()
     @addhandle("notify_addone")

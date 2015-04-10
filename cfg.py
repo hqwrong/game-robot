@@ -21,3 +21,4 @@ def parse_args():
 
     sys.path.insert(0, Config["proto_path"])
     
+CLIENT_PROMPT = "> "

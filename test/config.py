@@ -23,16 +23,22 @@ proto_header = "header"
 ########### config mode
 
 ## simulator mode
-# mode = "simulator"                 # client / simulator
-# run = [
-#     {
-#         "cmd" : "addone",
-#         "args" : ["hello world!"],
-#         "count" : 1,            # how many clients to launch to run this command
-#     },
-# ]
 
 ## client mode
 mode = "client"
+
+# mode = "simulator"                 # client / simulator
+# run = [
+#     {
+#         "cmd" : "echo",
+#         "args" : ["hello world!"],
+#         "count" : 5,            # how many clients to launch to run this command
+#     },
+#     {
+#         "cmd": "addlist",
+#         "args" : [[1,2,3,4,5]],
+#         "count" : 3,
+#     }
+# ]
 
 ############

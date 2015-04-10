@@ -1,3 +1,6 @@
+import gevent
+from gevent import monkey
+monkey.patch_all()
 import socket, struct, sys
 from proto.sproto.sproto import SprotoRpc
 import test.config as config
@@ -12,14 +15,32 @@ class Handler(object):
     def addone(server, msg):
         server.send("notify_addone", {"i":msg["i"]+1})
 
-class Server(object):
-    def __init__(self, addr):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        sock.bind(addr)
-        sock.listen(3)
-        self.sock = sock
-        self.conn = None
+    @staticmethod
+    def login(server, msg):
+        return {"prompt": "hello, %s"%msg["account"]}
+
+    @staticmethod
+    def addlist(server, msg):
+        accum = 0
+        for i in msg["l"]:
+            accum += i
+        return {"answer": accum}
+
+class GameServer(object):
+    def __init__(self, conn, addr):
+        self.conn = conn
+        self.client_addr = addr
+        self.c2s_encrypt = None
+        self.s2c_encrypt = None
+
+        with open(config.proto_path[0]) as f:
+            c2s = f.read()
+        with open(config.proto_path[1]) as f:
+            s2c = f.read()
+
+        self.proto = SprotoRpc(c2s, s2c, "header")
+
+        self._init_encrypt()
 
     def _init_encrypt(self):
         entype = getattr(config, "encrypt", None)
@@ -46,57 +67,50 @@ class Server(object):
 
     def run(self):
         while True:
-            self.conn, addr = self.sock.accept()
-            self._init_encrypt()
-            while True:
-                header = self._recv(2)
-                if not header:
-                    print "disconnected", addr
-                    break
-                sz, = struct.unpack("!H", header)
-                content = self._recv(sz)
-                self.on_recv(content)
-
-    def on_recv(self, content):
-        pass
-
-class SprotoServer(Server):
-    def __init__(self, port):
-        super(SprotoServer, self).__init__(port)
-        with open(config.proto_path[0]) as f:
-            c2s = f.read()
-        with open(config.proto_path[1]) as f:
-            s2c = f.read()
-
-        self.proto = SprotoRpc(c2s, s2c, "header")
-
-    def on_recv(self, content):
-        p = self.proto.dispatch(content)
-        session   = p.get("session", 0)
-        msg    =    p["msg"]
-        protoname = p["proto"]
-        assert p["type"] == "REQUEST"
-        print "request:", protoname, msg
-        resp = getattr(Handler, protoname)(self, msg)
-        if session:
-            print "response", resp
-            pack = self.proto.response(protoname, resp, session)
-            self._send(pack)
+            header = self._recv(2)
+            if not header:
+                print "disconnected", self.client_addr
+                break
+            sz, = struct.unpack("!H", header)
+            content = self._recv(sz)
+            p = self.proto.dispatch(content)
+            session   = p.get("session", 0)
+            msg    =    p["msg"]
+            protoname = p["proto"]
+            assert p["type"] == "REQUEST"
+            print "request:", protoname, msg
+            resp = getattr(Handler, protoname)(self, msg)
+            if session:
+                print "response", resp
+                pack = self.proto.response(protoname, resp, session)
+                self._send(pack)
 
     def send(self, protoname, msg):
         pack = self.proto.request(protoname, msg)
         self._send(pack)
+
+
+class Server(object):
+    def __init__(self, addr, prototype):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        sock.bind(addr)
+        sock.listen(3)
+        self.sock = sock
+        self.conn = None
+
+    def run(self):
+        while True:
+            conn, addr = self.sock.accept()
+            gs = GameServer(conn, addr)
+            gevent.spawn(gs.run)
 
 def main():
     port = config.port
     if len(sys.argv) < 2:
         print "Usage %s [sproto/protobuf]"%sys.argv[0]
         exit()
-    if sys.argv[1] == "sproto":
-        server = SprotoServer(("0.0.0.0", port))
-        print "...", server
-    else:
-        server = PbServer(port)
+    server = Server(("0.0.0.0", port), sys.argv[1])
     print "listen on", port
     server.run()
 

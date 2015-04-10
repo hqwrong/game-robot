@@ -23,3 +23,21 @@ notify_addone 3 {
         i 0 :integer
     }
 }
+
+login 4 {
+      request {
+          account 0 : string
+      }
+      response {
+          prompt 0 : string
+      }
+}
+
+addlist 5 {
+    request {
+        l 0 : *integer
+    }
+    response {
+        answer 0 : integer
+    }
+}
