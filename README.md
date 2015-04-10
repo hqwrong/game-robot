@@ -6,7 +6,7 @@ A simple robot client for game server.
 
 1. Provide high level synchronous api based on [gevent](http://gevent.org/)
 
-2. Multiple protos support. `sproto` and `protobuf` so far.
+2. Multiple protos support. [sproto](https://github.com/cloudwu/sproto) and [protobuf](https://github.com/google/protobuf) so far.
 
 3. Two modes support. `client` mode for interaction on command line, `simulator` mode for async running which is often used in pressure test.
 
@@ -50,7 +50,7 @@ To launch client:
 
     python main.py test/config.py
 
-Now you've got a client to play with. There a bunch of test commands for you, like:
+Now you've got a client to play with:
 
     $ python2 main.py test/config.py
     connect to ('127.0.0.1', 8251)
@@ -66,7 +66,7 @@ To launch test server:
 
     python -m test/server  sproto
 
-Uncomment followin block in test/config.py:
+Uncomment following block in test/config.py:
 
     mode = "simulator"                 # client / simulator
     run = [
@@ -82,5 +82,5 @@ Uncomment followin block in test/config.py:
         }
     ]
 
-Run client:
+Run client to run:
     python main.py test/config.py
