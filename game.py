@@ -34,7 +34,7 @@ class Game(object):
         return self.srv.invoke(protoname, msg)
 
     ################################ Test #########################################
-    @addcmd(["int", "string"])
+    @addcmd()
     def login(self, uid, token):
         self.uid = uid
         self.token = token or "Game is loading!"
@@ -57,7 +57,7 @@ class Game(object):
 
         return None
 
-    @addcmd(name = "create")
+    @addcmd("create")
     def create_user(self):
         resp = self.call("client.create", {"platform" : 1})
         print resp["uid"], resp["token"]
@@ -69,18 +69,18 @@ class Game(object):
         print("response:", resp)
         return resp
 
-    @addcmd(["string"])
+    @addcmd()
     def echo(self, msg):
         '''for sproto echo test '''
         resp = self.call("echo", {"msg" : msg})
         print("response:", resp)
         return resp
 
-    @addcmd(["int"])
+    @addcmd()
     def addone(self, i):
         self.send("addone", {"i": i})
 
-    @addcmd(["int"])
+    @addcmd()
     @addhandle("notify_addone")
     def notify_addone(self, i):
         print "addone result:", i

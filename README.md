@@ -8,9 +8,13 @@ A simple robot client for game server.
 
 2. Multiple protos support. `sproto` and `protobuf` so far.
 
-3. Two modes support. `client` mode for interaction on command line, `simulator` mode for async running which 
-   is often used in pressure test.
+3. Two modes support. `client` mode for interaction on command line, `simulator` mode for async running which is often used in pressure test.
 
+3. simple and easy-to-use api. Actually, you only have to put a decorator(@addcmd or @handle) above your function to make it a client command or a handle for proto request.
+
+4. simple but powerful command client, which support passing in types of string, int, list and dict.
+
+5. stream encrypt support built in.
 
 ## Setup && Launch
 
@@ -46,5 +50,5 @@ To launch client:
 
     python main.py test/config.py
 
-Now you've got a client to interact, try to type `addone 1` or `echo hello` to play around.
+Now you've got a client to interact, try to type `addone 1` or `echo "hello"` to play around.
 
