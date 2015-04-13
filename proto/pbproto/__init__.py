@@ -1,13 +1,13 @@
 import os, sys, time
 from . import proto_dict
 import client_rpc
+from .protobuf_to_dict import protobuf_to_dict, dict_to_protobuf
 
-def _msg2dict(msg):
-    ret = {}
-    fields = msg.ListFields()
-    for f,v in fields:
-        ret[f.name] = v
-    return ret
+def _pb2dict(msg):
+    return protobuf_to_dict(msg, use_enum_labels=True)
+
+def _dict2pb(pb, values):
+    return dict_to_protobuf(pb, values)
 
 class Message(object):
     def __init__(self, pack, id):
@@ -30,6 +30,9 @@ class Message(object):
 
     def type_id(self):
         return self.__dict__['_Rpc_Type_Id']
+
+    def pb_pack(self):
+        return self.__dict__['_Rpc_Pack']
 
     def encode(self):
         return self.__dict__['_Rpc_Pack'].SerializeToString()
@@ -93,6 +96,7 @@ class PbRpc(object):
             message = Message(handler['input'](), handler['id'])
         else:
             message = Message(handler['output'](), handler['id'])
+
         return message
 
     def type_name(self, type_id):
@@ -151,11 +155,10 @@ class PbRpc(object):
             type_name = self.type_name(type_id)
             message = self.lookup(type_name)
             message.decode(p.data)
-            _msg2dict(message)
             return {
                 "type":"REQUEST", 
                 "proto":type_name, 
-                "msg": _msg2dict(message),
+                "msg": _pb2dict(message),
                 "session": p.session if p.session != 0 else None,
             }
         else:
@@ -165,19 +168,19 @@ class PbRpc(object):
             message = self.lookup(type_name, False)
             message.decode(p.data)
             del self._sessions[session]
-            return {"type":"RESPONSE", "session":session, "msg":_msg2dict(message)}
+            return {"type":"RESPONSE", "session":session, "msg":_pb2dict(message)}
         
     def request(self, protoname, msg, session = 0):
         if session:
             self._sessions[session] = protoname
         pack = self.lookup(protoname)
         if msg:
-            self.make_pack(msg, pack)
+            _dict2pb(pack.pb_pack(), msg)
 
         return self.pack(session, pack.type_id(), pack.encode(), self.timestamp())
         
     def response(self, protoname, msg, session):
         pack = self.lookup(protoname)
         if msg:
-            self.make_pack(msg, pack)
+            _dict2pb(pack.pb_pack(), msg)
         return self.pack(session, pack.type_id(), pack.encode(), self.timestamp())
