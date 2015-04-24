@@ -33,7 +33,7 @@ to build.
 You need a config file to launch. see `test/config.py` for detail.
 
 ## Game logic
-Please add your logic functions to `game.py`.
+Please put your logic functions into `game.py`.
 
 use `@addcmd(ARGS, COMMAND_NAME)` decorator to add client command.
 
@@ -83,4 +83,5 @@ Uncomment following block in test/config.py:
     ]
 
 Run client to run:
+
     python main.py test/config.py
