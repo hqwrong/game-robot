@@ -1,6 +1,6 @@
 # game-robot
 
-A simple robot client for game server.
+Simple and Easy-to-Use robot client for game server.
 
 ## Features
 
@@ -10,11 +10,11 @@ A simple robot client for game server.
 
 3. Two modes support. `client` mode for interaction on command line, `simulator` mode for async running which is often used in pressure test.
 
-3. simple and easy-to-use api. Actually, you only have to put a decorator(@addcmd or @handle) above your function to make it a client command or a handle for proto request.
+3. Simple and Easy-to-use api.  Mostly only one line needed to add a command or request handler.
 
-4. simple but powerful command client, which support passing in types of string, int, list and dict.
+4. Simple but powerful command client, which support passing in types of string, int, list and dict.
 
-5. stream encrypt support built in.
+5. Stream encrypt support built in.
 
 ## Setup && Launch
 
