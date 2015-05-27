@@ -12,7 +12,7 @@ Simple and Easy-to-Use robot client for game server.
 
 3. Simple and Easy-to-use api.  Mostly only one line needed to add a command or request handler.
 
-4. Simple but powerful command client, which support passing in types of string, int, list and dict.
+4. Simple but powerful command client, which support passing in types of string, int, list and dict. Auto-Completions builtin.
 
 5. Stream encrypt support built in.
 
@@ -54,6 +54,13 @@ Now you've got a client to play with:
 
     $ python2 main.py test/config.py
     connect to ('127.0.0.1', 8251)
+    > help
+    help ['cmdname']
+    notify_addone ['i']
+    addone ['i']
+    echo ['msg']
+    login ['user']
+    addlist ['l']
     > login "foobar"
     hello, foobar
     [foobar] > addlist [1,3,5,7]
