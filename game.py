@@ -7,7 +7,7 @@ import md5, sys, traceback
 import gevent
 
 from command import *
-import cfg
+from cfg import Config
 
 def _get_secret(uid, token, salt):
     m = md5.new()
@@ -35,16 +35,19 @@ class Game(object):
         return self.srv.invoke(protoname, msg)
 
     ################################ Test #########################################
-    @addcmd("create")
-    def create_user(self):
-        resp = self.call("client.create", {"platform" : 1})
-        print resp["uid"], resp["token"]
+    @addcmd()
+    def help(self, cmdname = ""):
+        ok,similars = find_cmd(cmdname)
+        cmds = [cmdname] if ok else similars
+        for cmdname in cmds:
+            cmdname,args = inspect_cmd(cmdname)
+            print cmdname,args
 
     @addcmd()
     def login(self, user):
         '''for sproto test login '''
         resp = self.call("login", {"account": user})
-        cfg.CLIENT_PROMPT = "[%s] > " % user
+        Config["client_prompt"] = "[%s] > " % user
         print(resp["prompt"])
 
     @addcmd()

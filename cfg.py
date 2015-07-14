@@ -8,6 +8,7 @@ def parse_args():
                         help = 'game server ip address')
     parser.add_argument('-p', '--port', type=int, dest = 'port',
                         help = 'game server tcp port')
+    parser.add_argument('-u', '--uid', dest = 'uid', help="login as UID")
     parser.add_argument("-m", '--mode', dest = "mode", choices = ["simulator", "client"])
     parser.add_argument(dest="config", help = "config file")
     args = parser.parse_args()
@@ -20,5 +21,4 @@ def parse_args():
             Config[k] = v
 
     sys.path.insert(0, Config["proto_path"])
-    
-CLIENT_PROMPT = "> "
+

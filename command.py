@@ -1,4 +1,5 @@
 import sys, os, importlib
+import inspect
 
 cmddir = "cmd"
 
@@ -41,9 +42,36 @@ def _parseargs(argstr):
     for i in xrange(len(args)):
         args[i] = eval(args[i], {}, {})
     return args
-    
-def has_cmd(cmdname):
-    return cmdname in commands
+
+def find_cmd(cmdname):
+    if cmdname in commands:
+        return True,[]
+
+    similars = []
+    for n in commands:
+        if n.startswith(cmdname):
+            similars.append(n)
+
+    if not similars:
+        mindiff = 100000
+        for n in commands:
+            d = abs(len(n) - len(cmdname))
+            for i in range(min(len(n), len(cmdname))):
+                if n[i] != cmdname[i]:
+                    d += 1
+            if d < mindiff:
+                similars = [n]
+                mindiff = d
+            elif d == mindiff:
+                similars.append(n)
+
+    return False, similars
+
+def inspect_cmd(cmdname):
+    cmd = commands[cmdname]
+    args = inspect.getargspec(cmd["handle"]).args
+    del args[0]             # remove `self' arg
+    return cmdname, args
 
 def do_cmd(player, cmdname, args):
     cmd = commands[cmdname]
@@ -82,3 +110,7 @@ def addhandle(protoname):
         return f
 
     return _decorator
+
+def listcmd():
+    return [cmdname for cmdname in commands]
+

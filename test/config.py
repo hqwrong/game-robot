@@ -26,6 +26,7 @@ proto_header = "header"
 
 ## client mode
 mode = "client"
+client_prompt = "> "
 
 # mode = "simulator"                 # client / simulator
 # run = [
