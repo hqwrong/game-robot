@@ -12,7 +12,7 @@ Simple and Easy-to-Use robot client for game server.
 
 3. Simple and Easy-to-use api.  Mostly only one line needed to add a command or request handler.
 
-4. Simple but powerful command client, which support passing in types of string, int, list and dict. Auto-Completions builtin.
+4. Simple but powerful command client, features passing in python types(string, int, list and dict, e.t.c), and Auto-Completions builtin.
 
 5. Stream encrypt support built in.
 
@@ -38,6 +38,8 @@ Please put your logic functions into `game.py`.
 use `@addcmd(ARGS, COMMAND_NAME)` decorator to add client command.
 
 use `@addhandle(protoname)` decorator to add handle function for game server's request.
+
+Check `test/config.py` to see how to config client.
 
 ## Test
 
@@ -89,6 +91,6 @@ Uncomment following block in test/config.py:
         }
     ]
 
-Run client to run:
+Run client:
 
     python main.py test/config.py
